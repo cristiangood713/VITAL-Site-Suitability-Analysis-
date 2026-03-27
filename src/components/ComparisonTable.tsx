@@ -1,10 +1,22 @@
 import { Site, SiteEvaluation } from '../types';
-import { calculateWeightedScore, getRecommendationTier, getScoreColor } from '../utils/scoring';
+import { calculateWeightedScore, getRecommendationTier } from '../utils/scoring';
 
 type ComparisonTableProps = {
   sites: Site[];
   evaluations: SiteEvaluation[];
 };
+
+function scoreColor(score: number): string {
+  if (score >= 4) {
+    return 'var(--color-score-high)';
+  }
+
+  if (score === 3) {
+    return 'var(--color-score-mid)';
+  }
+
+  return 'var(--color-score-low)';
+}
 
 export function ComparisonTable({ sites, evaluations }: ComparisonTableProps): JSX.Element {
   const validRows = sites
@@ -19,57 +31,51 @@ export function ComparisonTable({ sites, evaluations }: ComparisonTableProps): J
 
   return (
     <section className="panel print-surface">
-      <h1>Comparison View</h1>
       <div className="table-scroll">
         <table className="comparison-table">
           <thead>
             <tr>
-              <th>Criteria</th>
-              {validRows.map(({ site }) => (
-                <th key={site.id}>{site.address}</th>
+              <th className="sticky-col">Site Name</th>
+              {criteria.map((criterion) => (
+                <th key={criterion.id}>{criterion.label}</th>
               ))}
+              <th>Weighted Total</th>
+              <th>Recommendation</th>
+              <th>Summary</th>
             </tr>
           </thead>
           <tbody>
-            {criteria.map((criterion) => (
-              <tr key={criterion.id}>
-                <th>{criterion.label}</th>
-                {validRows.map(({ site, evaluation }) => {
-                  const score = evaluation.categories.find((category) => category.id === criterion.id)?.score ?? 0;
-                  return (
-                    <td key={`${site.id}-${criterion.id}`} style={{ color: getScoreColor(score) }}>
-                      {score}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-            <tr>
-              <th>Weighted Total</th>
-              {validRows.map(({ site, evaluation }) => {
-                const total = calculateWeightedScore(evaluation.categories);
-                return <td key={`${site.id}-total`}>{total.toFixed(2)}</td>;
-              })}
-            </tr>
-            <tr>
-              <th>Recommendation</th>
-              {validRows.map(({ site, evaluation }) => {
-                const total = calculateWeightedScore(evaluation.categories);
-                return (
-                  <td key={`${site.id}-recommendation`}>
-                    {evaluation.overallRecommendation || getRecommendationTier(total)}
-                  </td>
-                );
-              })}
-            </tr>
-            <tr>
-              <th>Summary</th>
-              {validRows.map(({ site, evaluation }) => (
-                <td key={`${site.id}-summary`} className="summary-cell">
-                  {evaluation.summaryParagraph}
-                </td>
-              ))}
-            </tr>
+            {validRows.map(({ site, evaluation }) => {
+              const total = calculateWeightedScore(evaluation.categories);
+
+              return (
+                <tr key={site.id}>
+                  <th className="sticky-col">{site.address}</th>
+                  {criteria.map((criterion) => {
+                    const score = evaluation.categories.find((category) => category.id === criterion.id)?.score ?? 0;
+                    return (
+                      <td key={`${site.id}-${criterion.id}`}>
+                        <div className="score-cell">
+                          <span className="score-bar-track">
+                            <span
+                              className="score-bar-fill"
+                              style={{
+                                width: `${(score / 5) * 100}%`,
+                                background: scoreColor(score)
+                              }}
+                            />
+                          </span>
+                          <span className="score-value">{score}</span>
+                        </div>
+                      </td>
+                    );
+                  })}
+                  <td>{total.toFixed(2)}</td>
+                  <td>{evaluation.overallRecommendation || getRecommendationTier(total)}</td>
+                  <td className="summary-cell">{evaluation.summaryParagraph}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -42,52 +42,52 @@ export function SiteForm({ initialSite, onSave, onCancel }: SiteFormProps): JSX.
   };
 
   return (
-    <form className="panel site-form" onSubmit={handleSubmit}>
+    <form className="panel site-form page-stack" onSubmit={handleSubmit}>
       <h2>{formTitle}</h2>
       <div className="grid-2">
         <label>
-          Address
+          <span>Address</span>
           <input required value={site.address} onChange={(event) => updateField('address', event.target.value)} />
         </label>
         <label>
-          City
+          <span>City</span>
           <input required value={site.city} onChange={(event) => updateField('city', event.target.value)} />
         </label>
         <label>
-          Submarket
+          <span>Submarket</span>
           <input required value={site.submarket} onChange={(event) => updateField('submarket', event.target.value)} />
         </label>
         <label>
-          Building Type
+          <span>Building Type</span>
           <input required value={site.buildingType} onChange={(event) => updateField('buildingType', event.target.value)} />
         </label>
         <label>
-          Size (SF)
+          <span>Size (SF)</span>
           <input type="number" min={0} required value={site.sizeSF} onChange={(event) => updateField('sizeSF', Number(event.target.value))} />
         </label>
         <label>
-          Rent (NR/SF)
+          <span>Rent (NR/SF)</span>
           <input type="number" min={0} step="0.01" required value={site.rentNRSF} onChange={(event) => updateField('rentNRSF', Number(event.target.value))} />
         </label>
         <label>
-          Est. NNN
+          <span>Est. NNN</span>
           <input type="number" min={0} step="0.01" required value={site.estNNN} onChange={(event) => updateField('estNNN', Number(event.target.value))} />
         </label>
         <label>
-          Landlord
+          <span>Landlord</span>
           <input required value={site.landlord} onChange={(event) => updateField('landlord', event.target.value)} />
         </label>
       </div>
       <label>
-        Key Physical Features
+        <span>Key Physical Features</span>
         <textarea required rows={3} value={site.keyPhysicalFeatures} onChange={(event) => updateField('keyPhysicalFeatures', event.target.value)} />
       </label>
       <label>
-        Co-Tenants
+        <span>Co-Tenants</span>
         <textarea required rows={3} value={site.coTenants} onChange={(event) => updateField('coTenants', event.target.value)} />
       </label>
       <label>
-        Notes
+        <span>Notes</span>
         <textarea rows={4} value={site.notes} onChange={(event) => updateField('notes', event.target.value)} />
       </label>
       <div className="form-actions">
