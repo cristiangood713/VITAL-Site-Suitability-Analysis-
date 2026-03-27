@@ -19,9 +19,15 @@ export function SiteDetailPage({
 }: SiteDetailPageProps): JSX.Element {
   return (
     <section className="stacked-layout">
-      <button className="button-ghost" onClick={onBack}>
-        ← Back to Dashboard
-      </button>
+      <div className="page-intro">
+        <div>
+          <h1 className="page-title">Site Detail</h1>
+          <p className="page-subtitle">Document property specifics and underwriting rationale.</p>
+        </div>
+        <button className="button-ghost screen-only" onClick={onBack}>
+          Back to Dashboard
+        </button>
+      </div>
       <SiteForm initialSite={site} onSave={onSaveSite} />
       {site && <ScoreForm siteId={site.id} initialEvaluation={evaluation} onSave={onSaveEvaluation} />}
     </section>

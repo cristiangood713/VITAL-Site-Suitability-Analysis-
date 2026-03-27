@@ -13,9 +13,12 @@ export function SiteDashboard({ sites, evaluations, onAdd, onEdit, onDelete }: S
   const evaluationMap = new Map(evaluations.map((evaluation) => [evaluation.siteId, evaluation]));
 
   return (
-    <section>
-      <div className="toolbar">
-        <h1>Site Dashboard</h1>
+    <section className="page-stack">
+      <div className="page-intro">
+        <div>
+          <h1 className="page-title">Site Dashboard</h1>
+          <p className="page-subtitle">Curated shortlist and underwriting signals for VITAL Climbing Gym.</p>
+        </div>
         <button onClick={onAdd}>Add Site</button>
       </div>
       {sites.length === 0 ? (

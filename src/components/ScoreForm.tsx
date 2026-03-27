@@ -55,16 +55,16 @@ export function ScoreForm({ siteId, initialEvaluation, onSave }: ScoreFormProps)
   };
 
   return (
-    <form className="panel" onSubmit={handleSubmit}>
+    <form className="panel page-stack" onSubmit={handleSubmit}>
       <h2>Score Site</h2>
       {evaluation.categories.map((category) => (
         <div className="score-row" key={category.id}>
           <div className="score-header">
             <strong>{category.label}</strong>
-            <small>Weight: {Math.round(category.weight * 100)}%</small>
+            <small className="muted">Weight: {Math.round(category.weight * 100)}%</small>
           </div>
           <label>
-            Score (1-5)
+            <span>Score (1-5)</span>
             <select value={category.score} onChange={(event) => updateCategory(category.id, 'score', event.target.value)}>
               {[1, 2, 3, 4, 5].map((value) => (
                 <option key={value} value={value}>
@@ -74,13 +74,13 @@ export function ScoreForm({ siteId, initialEvaluation, onSave }: ScoreFormProps)
             </select>
           </label>
           <label>
-            Comments
+            <span>Comments</span>
             <textarea rows={2} value={category.comments} onChange={(event) => updateCategory(category.id, 'comments', event.target.value)} />
           </label>
         </div>
       ))}
       <label>
-        Overall Recommendation
+        <span>Overall Recommendation</span>
         <input
           value={evaluation.overallRecommendation}
           placeholder={derivedRecommendation}
@@ -88,7 +88,7 @@ export function ScoreForm({ siteId, initialEvaluation, onSave }: ScoreFormProps)
         />
       </label>
       <label>
-        Summary Paragraph
+        <span>Summary Paragraph</span>
         <textarea
           rows={4}
           required
@@ -97,7 +97,7 @@ export function ScoreForm({ siteId, initialEvaluation, onSave }: ScoreFormProps)
         />
       </label>
       <div className="score-total" style={{ borderColor: getScoreColor(Math.round(compositeScore)) }}>
-        <span>Weighted Total</span>
+        <span className="score-label">Weighted Total</span>
         <strong>{compositeScore.toFixed(2)} / 5.00</strong>
       </div>
       <div className="form-actions">

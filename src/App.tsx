@@ -44,22 +44,27 @@ function AppShell(): JSX.Element {
   };
 
   return (
-    <div className="app-container">
-      <header>
-        <h1>VITAL Site Suitability Analysis</h1>
-        <nav>
-          <Link className={location.pathname === '/' ? 'active' : ''} to="/">
-            Dashboard
-          </Link>
-          <Link className={location.pathname.startsWith('/site') ? 'active' : ''} to={siteId ? `/site/${siteId}` : '/site/new'}>
-            Site Detail
-          </Link>
-          <Link className={location.pathname === '/comparison' ? 'active' : ''} to="/comparison">
-            Comparison
-          </Link>
-        </nav>
+    <div className="app-shell">
+      <header className="top-nav">
+        <div className="top-nav-inner">
+          <div className="brand-mark">VITAL — Site Analysis</div>
+          <nav className="nav-links">
+            <Link className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} to="/">
+              Dashboard
+            </Link>
+            <Link
+              className={`nav-link ${location.pathname.startsWith('/site') ? 'active' : ''}`}
+              to={siteId ? `/site/${siteId}` : '/site/new'}
+            >
+              Site Detail
+            </Link>
+            <Link className={`nav-link ${location.pathname === '/comparison' ? 'active' : ''}`} to="/comparison">
+              Comparison
+            </Link>
+          </nav>
+        </div>
       </header>
-      <main>
+      <main className="app-container">
         <AppRouter
           sites={sites}
           evaluations={evaluations}
