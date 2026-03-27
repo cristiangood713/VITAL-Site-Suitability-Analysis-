@@ -1,81 +1,105 @@
-import { Site, SiteEvaluation } from '../types';
-import { calculateWeightedScore, getRecommendationTier } from '../utils/scoring';
+import { Site } from '../types';
 
 type ComparisonTableProps = {
   sites: Site[];
-  evaluations: SiteEvaluation[];
 };
 
-function scoreColor(score: number): string {
-  if (score >= 4) {
-    return 'var(--color-score-high)';
+function isBestValue(field: 'sizeSF' | 'rentNRSF' | 'estNNN' | 'compositeScore', value: number, sites: Site[]): boolean {
+  const values = sites.map((site) => site[field]);
+  if (values.length === 0) {
+    return false;
   }
 
-  if (score === 3) {
-    return 'var(--color-score-mid)';
+  if (field === 'sizeSF' || field === 'compositeScore') {
+    return value === Math.max(...values);
   }
 
-  return 'var(--color-score-low)';
+  return value === Math.min(...values);
 }
 
-export function ComparisonTable({ sites, evaluations }: ComparisonTableProps): JSX.Element {
-  const validRows = sites
-    .map((site) => ({ site, evaluation: evaluations.find((evaluation) => evaluation.siteId === site.id) }))
-    .filter((row): row is { site: Site; evaluation: SiteEvaluation } => Boolean(row.evaluation));
-
-  if (validRows.length === 0) {
-    return <p className="panel">Save at least one site evaluation to view side-by-side comparison.</p>;
+export function ComparisonTable({ sites }: ComparisonTableProps): JSX.Element {
+  if (sites.length === 0) {
+    return <p className="panel">No sites available yet. Add at least one site to compare.</p>;
   }
-
-  const criteria = validRows[0].evaluation.categories;
 
   return (
     <section className="panel print-surface">
       <div className="table-scroll">
-        <table className="comparison-table">
+        <table className="comparison-table comparison-table-sites">
           <thead>
             <tr>
-              <th className="sticky-col">Site Name</th>
-              {criteria.map((criterion) => (
-                <th key={criterion.id}>{criterion.label}</th>
+              <th className="sticky-col">Field</th>
+              {sites.map((site) => (
+                <th key={site.id}>{site.address || 'Untitled Site'}</th>
               ))}
-              <th>Weighted Total</th>
-              <th>Recommendation</th>
-              <th>Summary</th>
             </tr>
           </thead>
           <tbody>
-            {validRows.map(({ site, evaluation }) => {
-              const total = calculateWeightedScore(evaluation.categories);
-
-              return (
-                <tr key={site.id}>
-                  <th className="sticky-col">{site.address}</th>
-                  {criteria.map((criterion) => {
-                    const score = evaluation.categories.find((category) => category.id === criterion.id)?.score ?? 0;
-                    return (
-                      <td key={`${site.id}-${criterion.id}`}>
-                        <div className="score-cell">
-                          <span className="score-bar-track">
-                            <span
-                              className="score-bar-fill"
-                              style={{
-                                width: `${(score / 5) * 100}%`,
-                                background: scoreColor(score)
-                              }}
-                            />
-                          </span>
-                          <span className="score-value">{score}</span>
-                        </div>
-                      </td>
-                    );
-                  })}
-                  <td>{total.toFixed(2)}</td>
-                  <td>{evaluation.overallRecommendation || getRecommendationTier(total)}</td>
-                  <td className="summary-cell">{evaluation.summaryParagraph}</td>
-                </tr>
-              );
-            })}
+            <tr>
+              <th className="sticky-col">City</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-city`}>{site.city || '—'}</td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">Submarket</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-submarket`}>{site.submarket || '—'}</td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">Size (SF)</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-size`} className={isBestValue('sizeSF', site.sizeSF, sites) ? 'best-value' : ''}>
+                  {site.sizeSF.toLocaleString()}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">Rent ($/NRSF)</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-rent`} className={isBestValue('rentNRSF', site.rentNRSF, sites) ? 'best-value' : ''}>
+                  ${site.rentNRSF.toFixed(2)}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">NNN ($/SF)</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-nnn`} className={isBestValue('estNNN', site.estNNN, sites) ? 'best-value' : ''}>
+                  ${site.estNNN.toFixed(2)}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">Composite Score</th>
+              {sites.map((site) => (
+                <td
+                  key={`${site.id}-score`}
+                  className={isBestValue('compositeScore', site.compositeScore, sites) ? 'best-value' : ''}
+                >
+                  {site.compositeScore.toFixed(2)} / 100
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">Recommendation</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-recommendation`}>{site.recommendation}</td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">Landlord</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-landlord`}>{site.landlord || '—'}</td>
+              ))}
+            </tr>
+            <tr>
+              <th className="sticky-col">Building Type</th>
+              {sites.map((site) => (
+                <td key={`${site.id}-building`}>{site.buildingType || '—'}</td>
+              ))}
+            </tr>
           </tbody>
         </table>
       </div>

@@ -1,17 +1,14 @@
-import { Site, SiteEvaluation } from '../types';
+import { Site } from '../types';
 import { SiteCard } from './SiteCard';
 
 type SiteDashboardProps = {
   sites: Site[];
-  evaluations: SiteEvaluation[];
   onAdd: () => void;
   onEdit: (siteId: string) => void;
   onDelete: (siteId: string) => void;
 };
 
-export function SiteDashboard({ sites, evaluations, onAdd, onEdit, onDelete }: SiteDashboardProps): JSX.Element {
-  const evaluationMap = new Map(evaluations.map((evaluation) => [evaluation.siteId, evaluation]));
-
+export function SiteDashboard({ sites, onAdd, onEdit, onDelete }: SiteDashboardProps): JSX.Element {
   return (
     <section className="page-stack">
       <div className="page-intro">
@@ -26,13 +23,7 @@ export function SiteDashboard({ sites, evaluations, onAdd, onEdit, onDelete }: S
       ) : (
         <div className="site-list">
           {sites.map((site) => (
-            <SiteCard
-              key={site.id}
-              site={site}
-              evaluation={evaluationMap.get(site.id)}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
+            <SiteCard key={site.id} site={site} onEdit={onEdit} onDelete={onDelete} />
           ))}
         </div>
       )}

@@ -294,6 +294,43 @@ button:hover {
   border-color: var(--color-score-low);
 }
 
+.delete-button {
+  margin-left: auto;
+}
+
+.field-error {
+  color: var(--color-score-low);
+  font-size: 0.78rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  border: 1px solid currentColor;
+  font-weight: 600;
+}
+
+.badge-green {
+  color: #1f6f2b;
+  background: #e6f4e8;
+}
+
+.badge-amber {
+  color: #8a5a00;
+  background: #fff5db;
+}
+
+.badge-red {
+  color: #9c2f22;
+  background: #fbe9e7;
+}
+
+.badge-blue {
+  color: #165b9a;
+  background: #e8f1fb;
+}
+
 .score-row {
   border: 1px solid color-mix(in srgb, var(--color-border) 65%, white 35%);
   border-radius: var(--radius-sm);
@@ -345,6 +382,11 @@ button:hover {
 .comparison-table tbody tr:nth-child(even) td,
 .comparison-table tbody tr:nth-child(even) th {
   background: color-mix(in srgb, var(--color-bg) 55%, white 45%);
+}
+
+.comparison-table .best-value {
+  font-weight: 700;
+  background: #e8f5e9 !important;
 }
 
 .comparison-table .sticky-col {
@@ -465,5 +507,16 @@ button:hover {
   .print-header h1 {
     font-size: 1rem;
     margin-bottom: var(--space-2);
+  }
+
+  .comparison-table {
+    min-width: 100%;
+    font-size: 11px;
+    page-break-inside: avoid;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.35rem;
   }
 }
