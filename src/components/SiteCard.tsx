@@ -1,16 +1,37 @@
-import { Site, SiteEvaluation } from '../types';
-import { calculateWeightedScore, getRecommendationTier } from '../utils/scoring';
+import { RecommendationStatus, Site } from '../types';
 
 type SiteCardProps = {
   site: Site;
-  evaluation?: SiteEvaluation;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 };
 
-export function SiteCard({ site, evaluation, onEdit, onDelete }: SiteCardProps): JSX.Element {
-  const score = evaluation ? calculateWeightedScore(evaluation.categories) : null;
+function getScoreBadgeClass(score: number): string {
+  if (score >= 80) {
+    return 'badge badge-green';
+  }
 
+  if (score >= 60) {
+    return 'badge badge-amber';
+  }
+
+  return 'badge badge-red';
+}
+
+function getRecommendationClass(recommendation: RecommendationStatus): string {
+  if (recommendation === 'Pursue') {
+    return 'badge badge-green';
+  }
+  if (recommendation === 'Pass') {
+    return 'badge badge-red';
+  }
+  if (recommendation === 'LOI Submitted') {
+    return 'badge badge-blue';
+  }
+  return 'badge badge-amber';
+}
+
+export function SiteCard({ site, onEdit, onDelete }: SiteCardProps): JSX.Element {
   return (
     <article className="panel card site-card">
       <div className="site-info-grid">
@@ -26,27 +47,31 @@ export function SiteCard({ site, evaluation, onEdit, onDelete }: SiteCardProps):
         <div className="site-meta">
           <p>
             <span className="label-caps">Landlord</span>
-            {site.landlord}
+            {site.landlord || '—'}
           </p>
           <p>
             <span className="label-caps">Building Type</span>
-            {site.buildingType}
+            {site.buildingType || '—'}
           </p>
         </div>
       </div>
       <div className="site-info-grid">
-        <div className="site-score">
-          <span className="label-caps">Score</span>
-          <strong>{score ? `${score.toFixed(2)} / 5` : 'Not scored'}</strong>
+        <div>
+          <span className="label-caps">Composite Score</span>
+          <p>
+            <span className={getScoreBadgeClass(site.compositeScore)}>{site.compositeScore.toFixed(2)} / 100</span>
+          </p>
         </div>
         <div>
           <span className="label-caps">Recommendation</span>
-          <p>{evaluation?.overallRecommendation || (score ? getRecommendationTier(score) : 'Pending')}</p>
+          <p>
+            <span className={getRecommendationClass(site.recommendation)}>{site.recommendation}</span>
+          </p>
         </div>
       </div>
-      <div className="actions-row">
+      <div className="actions-row card-actions">
         <button onClick={() => onEdit(site.id)}>Edit</button>
-        <button className="button-danger" onClick={() => onDelete(site.id)}>
+        <button className="button-danger delete-button" onClick={() => onDelete(site.id)}>
           Delete
         </button>
       </div>

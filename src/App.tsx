@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppRouter } from './router';
-import { deleteSite, getEvaluations, getSites, saveEvaluation, saveSite } from './storage';
-import { Site, SiteEvaluation } from './types';
+import { deleteSite, getSites, saveSite } from './storage';
+import { Site } from './types';
 
 function extractSiteId(pathname: string): string | undefined {
   const parts = pathname.split('/').filter(Boolean);
@@ -15,16 +15,11 @@ function extractSiteId(pathname: string): string | undefined {
 
 function AppShell(): JSX.Element {
   const [sites, setSites] = useState<Site[]>(() => getSites());
-  const [evaluations, setEvaluations] = useState<SiteEvaluation[]>(() => getEvaluations());
   const navigate = useNavigate();
   const location = useLocation();
   const siteId = extractSiteId(location.pathname);
 
   const selectedSite = useMemo(() => sites.find((site) => site.id === siteId), [siteId, sites]);
-  const selectedEvaluation = useMemo(
-    () => evaluations.find((evaluation) => evaluation.siteId === siteId),
-    [siteId, evaluations]
-  );
 
   const handleSaveSite = (site: Site) => {
     setSites(saveSite(site));
@@ -32,15 +27,15 @@ function AppShell(): JSX.Element {
   };
 
   const handleDeleteSite = (id: string) => {
+    const confirmed = window.confirm('Are you sure you want to delete this site?');
+    if (!confirmed) {
+      return;
+    }
+
     setSites(deleteSite(id));
-    setEvaluations(getEvaluations());
     if (siteId === id) {
       navigate('/');
     }
-  };
-
-  const handleSaveEvaluation = (evaluation: SiteEvaluation) => {
-    setEvaluations(saveEvaluation(evaluation));
   };
 
   return (
@@ -52,11 +47,8 @@ function AppShell(): JSX.Element {
             <Link className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} to="/">
               Dashboard
             </Link>
-            <Link
-              className={`nav-link ${location.pathname.startsWith('/site') ? 'active' : ''}`}
-              to={siteId ? `/site/${siteId}` : '/site/new'}
-            >
-              Site Detail
+            <Link className={`nav-link ${location.pathname.startsWith('/site') ? 'active' : ''}`} to="/site/new">
+              Add Site
             </Link>
             <Link className={`nav-link ${location.pathname === '/comparison' ? 'active' : ''}`} to="/comparison">
               Comparison
@@ -67,14 +59,11 @@ function AppShell(): JSX.Element {
       <main className="app-container">
         <AppRouter
           sites={sites}
-          evaluations={evaluations}
           selectedSite={selectedSite}
-          selectedEvaluation={selectedEvaluation}
           onAdd={() => navigate('/site/new')}
           onEdit={(id) => navigate(`/site/${id}`)}
           onDelete={handleDeleteSite}
           onSaveSite={handleSaveSite}
-          onSaveEvaluation={handleSaveEvaluation}
           onBack={() => navigate('/')}
         />
       </main>
